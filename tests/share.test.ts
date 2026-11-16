@@ -14,3 +14,8 @@ test("share message contains the score, challenge day and site link", () => {
 test("practice share is explicitly labeled", () => {
   assert.match(shareMessage({ score: 80, day: "2026-11-12", title: "Sin repetir", url: "https://game.example", practice: true }), /Práctica/);
 });
+
+test("share message shows passed and failed cases without revealing the solution", () => {
+  const message = shareMessage({ score: 75, day: "2026-11-16", title: "Esperando el calor", url: "https://game.example", practice: false, cases: [true, false, true] });
+  assert.match(message, /🟩🟥🟩 2\/3 casos/);
+});

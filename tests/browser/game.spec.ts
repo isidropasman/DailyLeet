@@ -38,7 +38,7 @@ test("daily: decisions, execution, immutable submit and reload", async ({ page, 
   await expect(page.getByText("Desafío en curso", { exact: true })).toBeVisible();
   await page.locator('.option[data-choice="0"]').click();
   await expect(page.getByLabel("Código generado")).toContainText("for (");
-  await expect(page.locator(".code-changed").first()).toBeVisible();
+  await expect(page.getByLabel("Código generado").locator(".code-changed").first()).toBeVisible();
   await page.getByRole("button", { name: "Siguiente", exact: true }).click();
   await page.locator('.option[data-choice="0"]').click();
   await page.reload();
@@ -51,9 +51,8 @@ test("daily: decisions, execution, immutable submit and reload", async ({ page, 
   await expect(page.locator(".trace-heading")).toContainText("Paso 2");
   await page.getByRole("button", { name: "Enviar solución" }).click();
   await expect(page.getByLabel("Resultados de ejecución")).toContainText("12 / 12 tests");
-  await expect(page.getByLabel("Puntaje de la solución")).toHaveCount(0);
-  await page.getByRole("button", { name: "Ver mi puntaje" }).click();
   await expect(page.getByLabel("Puntaje de la solución")).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Cerrar" }).click();
   await page.getByRole("button", { name: "Ranking", exact: true }).click();
   await expect(page.getByRole("dialog")).toContainText("El ranking mundial es solo para cuentas");
   await page.getByRole("button", { name: "Cerrar" }).click();
@@ -145,9 +144,8 @@ test("mobile practice works for all three problems with no overflow", async ({ p
     }
     await page.getByRole("button", { name: "Enviar solución" }).click();
     await expect(page.getByLabel("Resultados de ejecución")).toContainText("12 / 12 tests");
-  await expect(page.getByLabel("Puntaje de la solución")).toHaveCount(0);
-  await page.getByRole("button", { name: "Ver mi puntaje" }).click();
   await expect(page.getByLabel("Puntaje de la solución")).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Cerrar" }).click();
     await page.locator(".stepper button").nth(2).click();
     await page.locator('.option[data-choice="1"]').click();
     await expect(page.getByLabel("Resultados de ejecución")).toHaveCount(0);
@@ -210,11 +208,11 @@ test("incorrect solutions show actual failing executions before a partial score"
   }
   await page.getByRole("button", { name: "Enviar solución", exact: true }).click();
   await expect(page.getByLabel("Resultados de ejecución")).toContainText("Hay casos por revisar");
-  await expect(page.getByLabel("Puntaje de la solución")).toHaveCount(0);
+  await page.getByRole("dialog").getByRole("button", { name: "Ver los casos de prueba" }).click();
   await page.locator(".test-selector .failed").first().click();
   const values = await page.locator(".execution-case code").allTextContents();
   expect(values[1]).not.toEqual(values[2]);
-  await page.getByRole("button", { name: "Ver mi puntaje" }).click();
+  await page.getByRole("button", { name: "Ver puntaje" }).click();
   await expect(page.locator(".score-breakdown")).toContainText("/ 90");
   await expect(page.locator(".score-breakdown")).toContainText("/ 3");
   const points = Number(await page.locator(".score-total strong").innerText());
@@ -231,14 +229,14 @@ test("share score copies the visible message with date and page link into the cl
     await page.locator('.option[data-choice="0"]').click();
   }
   await page.getByRole("button", { name: "Enviar solución", exact: true }).click();
-  await page.getByRole("button", { name: "Ver mi puntaje" }).click();
-  const message = await page.getByLabel("Mensaje para compartir").innerText();
-  expect(message).toMatch(/\d+\/100/);
+  await page.getByRole("dialog").getByRole("button", { name: "Compartir", exact: true }).click();
+  await expect(page.getByRole("dialog").getByRole("button", { name: "Copiado" })).toBeVisible();
+  const message = await page.evaluate(() => navigator.clipboard.readText());
+  const score = await page.locator(".result-score strong").innerText();
+  expect(message).toContain(`${score}/100`);
   expect(message).toMatch(/\d{2}\/\d{2}\/\d{4}/);
+  expect(message).toMatch(/[🟩🟥]{12} \d+\/12 casos/u);
   expect(message).toContain("http://localhost:3100/");
-  await page.getByRole("button", { name: "Copiar mensaje", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Copiado al portapapeles" })).toBeVisible();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(message);
 });
 
 test("API rejects malformed paths, cross-origin writes and stale daily", async ({ page, context }) => {

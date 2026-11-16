@@ -38,9 +38,11 @@ test("new exercises show changing code, real samples and valid evaluations", asy
     }
     await page.getByRole("button",{name:"Ejecutar y evaluar",exact:true}).click();
     await expect(page.getByLabel("Resultados de ejecución")).toContainText("12 / 12 tests");
-    await page.getByRole("button",{name:"Ver mi puntaje",exact:true}).click();
-    await expect(page.locator(".explain")).toContainText("La idea clave");
-    await expect(page.locator(".explain")).toContainText("Solución óptima");
+    await page.getByRole("dialog").getByRole("button",{name:"Entender por qué",exact:true}).click();
+    const learn = page.getByRole("region",{name:"Entender el ejercicio"});
+    await expect(learn).toContainText("La lógica detrás");
+    await expect(learn).toContainText("Tu solución es óptima");
+    await expect(learn.getByLabel("Solución óptima")).toBeVisible();
   }
 });
 
@@ -53,6 +55,7 @@ test("one-decision approaches have a working next action and completed dailies o
   await expect(page.getByRole("button",{name:"Siguiente",exact:true})).toHaveCount(0);
   await page.getByRole("button",{name:"Ejecutar y evaluar",exact:true}).click();
   await expect(page.getByLabel("Resultados de ejecución")).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Cerrar" }).click();
   await page.getByRole("button",{name:"Desafío diario",exact:true}).click();
   await page.getByRole("button",{name:"Empezar desafío",exact:true}).click();
   for(let i=0;i<3;i++) {
@@ -60,6 +63,7 @@ test("one-decision approaches have a working next action and completed dailies o
     await page.locator('.option[data-choice="0"]').click();
   }
   await page.getByRole("button",{name:"Enviar y terminar",exact:true}).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Cerrar" }).click();
   await expect(page.getByRole("button",{name:"Seguir practicando",exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Seguir practicando",exact:true}).click();
   await expect(page.locator(".option").first()).toBeEnabled();

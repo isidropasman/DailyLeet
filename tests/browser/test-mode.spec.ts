@@ -52,8 +52,8 @@ test("private daily can restart repeatedly without changing official result or r
   }
   await page.getByRole("button",{name:"Enviar solución",exact:true}).click();
   await expect(page.getByLabel("Resultados de ejecución")).toContainText("12 / 12 tests");
-  await page.getByRole("button",{name:"Ver mi puntaje",exact:true}).click();
-  await expect(page.getByLabel("Mensaje para compartir")).toContainText("Prueba privada");
+  await expect(page.locator(".result-kicker")).toContainText("Prueba privada");
+  await page.getByRole("dialog").getByRole("button", { name: "Cerrar" }).click();
   const first = await (await page.request.get("/api/game")).json();
   expect(first.attempt).toEqual(official.attempt);
   expect(first.leaders.find((entry: {me:boolean}) => entry.me)).toEqual(official.leaders.find((entry: {me:boolean}) => entry.me));
