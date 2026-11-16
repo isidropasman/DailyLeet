@@ -1,0 +1,44 @@
+{
+  "name": "dailyleet",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "test:languages": "tsx --test tests/language-equivalence.test.ts",
+    "test:e2e": "playwright test",
+    "test:db": "bash scripts/local-db.sh exec-test -- tsx --test --test-concurrency=1 tests/db/*.test.ts",
+    "db:setup": "node scripts/setup-db.mjs",
+    "db:local": "bash scripts/local-db.sh up",
+    "db:local:down": "bash scripts/local-db.sh down",
+    "loadtest": "bash scripts/local-db.sh exec -- node scripts/loadtest.mjs"
+  },
+  "dependencies": {
+    "@clerk/localizations": "4.24.6",
+    "@clerk/nextjs": "7.9.25",
+    "@neondatabase/serverless": "1.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "1.72.0",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "@clerk/testing": "2.2.55",
+    "@playwright/test": "1.65.0",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "pg": "8.16.3",
+    "tailwindcss": "^4.3.5",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  },
+  "packageManager": "pnpm@10.33.2"
+}
