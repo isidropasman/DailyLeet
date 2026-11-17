@@ -18,6 +18,7 @@ import { maxSubarrayJudge } from "./max-subarray/cases";
 import { containerWaterJudge } from "./container-water/cases";
 import { mergeIntervalsJudge } from "./merge-intervals/cases";
 import { rotatedMinJudge } from "./rotated-min/cases";
+import { rottingOrangesJudge } from "./rotting-oranges/cases";
 
 // Server-only: hidden cases and pass/fail contracts. Import it only from engine.ts so cases stay out of the client bundle.
 export const judges: Record<ModuleKind, Judge> = {
@@ -39,4 +40,5 @@ export const judges: Record<ModuleKind, Judge> = {
   "container-water": containerWaterJudge,
   "merge-intervals": mergeIntervalsJudge,
   "rotated-min": rotatedMinJudge,
+  "rotting-oranges": rottingOrangesJudge,
 };
