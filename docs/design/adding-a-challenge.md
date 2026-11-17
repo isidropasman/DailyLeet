@@ -11,6 +11,8 @@ Usá exactamente el nombre de `weeklyPlan` (`src/lib/challenges.ts`). Si no coin
 | S1 | `daily-temperatures` ✅ | `min-window` | `subarray-sum` ✅ | `koko` | `course-schedule` | `meeting-rooms` | `largest-rectangle` |
 | S2 | `edit-distance` | `lru-cache` | `coin-change` | `median-stream` | `redundant-connection` | `lis` | `network-delay` |
 
+Bloque de prioridad (`priorityPlan`): del 2026-11-18 al 2026-11-23 se juegan `max-subarray`, `container-water`, `merge-intervals`, `rotated-min`, `rotting-oranges` y `partition-subset`. El 2026-11-24 el plan semanal sigue donde quedó (`subarray-sum`). Un kind nuevo puede ir en cualquiera de las dos listas; el test de catálogo exige que todo módulo esté planificado.
+
 ## 1. Carpeta `src/lib/challenges/<kind>/`
 
 | Archivo | Exporta | Qué contiene |
