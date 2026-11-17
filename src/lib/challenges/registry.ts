@@ -18,6 +18,7 @@ import { containerWater } from "./container-water";
 import { mergeIntervals } from "./merge-intervals";
 import { rotatedMin } from "./rotated-min";
 import { rottingOranges } from "./rotting-oranges";
+import { partitionSubset } from "./partition-subset";
 
 // Client-safe registry. Adding a challenge: one line here and one in ./judges.ts (TypeScript enforces the second).
 export const modules = {
@@ -40,6 +41,7 @@ export const modules = {
   "merge-intervals": mergeIntervals,
   "rotated-min": rotatedMin,
   "rotting-oranges": rottingOranges,
+  "partition-subset": partitionSubset,
 } satisfies Record<string, ChallengeModule>;
 
 export type ModuleKind = keyof typeof modules;

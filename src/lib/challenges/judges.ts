@@ -19,6 +19,7 @@ import { containerWaterJudge } from "./container-water/cases";
 import { mergeIntervalsJudge } from "./merge-intervals/cases";
 import { rotatedMinJudge } from "./rotated-min/cases";
 import { rottingOrangesJudge } from "./rotting-oranges/cases";
+import { partitionSubsetJudge } from "./partition-subset/cases";
 
 // Server-only: hidden cases and pass/fail contracts. Import it only from engine.ts so cases stay out of the client bundle.
 export const judges: Record<ModuleKind, Judge> = {
@@ -41,4 +42,5 @@ export const judges: Record<ModuleKind, Judge> = {
   "merge-intervals": mergeIntervalsJudge,
   "rotated-min": rotatedMinJudge,
   "rotting-oranges": rottingOrangesJudge,
+  "partition-subset": partitionSubsetJudge,
 };
