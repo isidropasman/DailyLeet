@@ -16,6 +16,7 @@ import { medianStream } from "./median-stream";
 import { maxSubarray } from "./max-subarray";
 import { containerWater } from "./container-water";
 import { mergeIntervals } from "./merge-intervals";
+import { rotatedMin } from "./rotated-min";
 
 // Client-safe registry. Adding a challenge: one line here and one in ./judges.ts (TypeScript enforces the second).
 export const modules = {
@@ -36,6 +37,7 @@ export const modules = {
   "max-subarray": maxSubarray,
   "container-water": containerWater,
   "merge-intervals": mergeIntervals,
+  "rotated-min": rotatedMin,
 } satisfies Record<string, ChallengeModule>;
 
 export type ModuleKind = keyof typeof modules;
