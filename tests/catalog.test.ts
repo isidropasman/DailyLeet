@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { challenges, dailyChallenge, scheduleFor, weeklyPlan, type Choices, type LegacyKind } from "../src/lib/challenges";
+import { challenges, dailyChallenge, priorityPlan, PRIORITY_START, scheduleFor, weeklyPlan, type Choices, type LegacyKind } from "../src/lib/challenges";
 import { modules } from "../src/lib/challenges/registry";
 import { evaluate, run, type RunResult } from "../src/lib/engine";
 
@@ -62,34 +62,36 @@ test("already-issued days keep their original challenge", () => {
   assert.equal(dailyChallenge(utc("2026-11-15")).kind, "move-zeroes");
 });
 
-test("from 2026-11-16 the weekly plan alternates S1/S2 by week and falls back to the legacy rotation", () => {
-  const issued = ["2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20", "2026-11-21", "2026-11-22"];
-  assert.deepEqual(issued.map(day => scheduleFor(day)), [
+test("2026-11-16 and 2026-11-17 were served from the weekly plan and stay frozen", () => {
+  assert.deepEqual(["2026-11-16", "2026-11-17"].map(day => scheduleFor(day)), [
     { source: "plan", week: "S1", kind: "daily-temperatures" },
     { source: "plan", week: "S1", kind: "min-window" },
-    { source: "plan", week: "S1", kind: "subarray-sum" },
-    { source: "plan", week: "S1", kind: "koko" },
-    { source: "plan", week: "S1", kind: "course-schedule" },
-    { source: "plan", week: "S1", kind: "meeting-rooms" },
-    { source: "plan", week: "S1", kind: "largest-rectangle" },
   ]);
-  for (let offset = 0; offset < 28; offset++) {
-    const day = addDays("2026-11-16", offset);
+});
+
+test("the priority block runs from 2026-11-18 for six days, then the weekly plan resumes where it stopped", () => {
+  priorityPlan.forEach((planned, index) => {
+    const day = addDays(PRIORITY_START, index);
+    assert.deepEqual(scheduleFor(day), { source: "priority", kind: planned }, day);
+    assert.equal(dailyChallenge(utc(day)).kind, planned, day);
+  });
+  const resumed = addDays(PRIORITY_START, priorityPlan.length);
+  assert.deepEqual(scheduleFor(resumed), { source: "plan", week: "S1", kind: "subarray-sum" }, "the plan resumes at S1 day 3");
+  const sequence = [...weeklyPlan.S1.slice(2), ...weeklyPlan.S2, ...weeklyPlan.S1, ...weeklyPlan.S2.slice(0, 2)];
+  sequence.forEach((planned, index) => {
+    const day = addDays(resumed, index);
     const slot = scheduleFor(day);
-    const week = Math.floor(offset / 7) % 2 === 0 ? "S1" : "S2";
-    assert.equal(new Date(day).getUTCDay(), (offset + 1) % 7, "the plan starts on a Monday");
-    if (slot.source === "legacy") assert.fail(`${day} must follow the plan`);
-    assert.equal(slot.week, week, day);
-    const planned = weeklyPlan[week][offset % 7];
+    if (slot.source !== "plan" && slot.source !== "fallback") assert.fail(`${day} must follow the weekly plan`);
     assert.equal(slot.source === "plan" ? slot.kind : slot.planned, planned, day);
     assert.equal(slot.source, Object.hasOwn(modules, planned) ? "plan" : "fallback", `${day}: implemented kinds are scheduled, the rest fall back`);
     assert.equal(dailyChallenge(utc(day)).kind, slot.kind, day);
-  }
+  });
 });
 
-test("every planned kind is unique and every module is in the plan", () => {
-  const planned = [...weeklyPlan.S1, ...weeklyPlan.S2];
-  assert.equal(new Set(planned).size, 14);
-  for (const kind of Object.keys(modules)) assert.ok(planned.some(item => item === kind), `${kind} is not in weeklyPlan`);
+test("every planned kind is unique, implemented, and every module is planned", () => {
+  const planned: string[] = [...weeklyPlan.S1, ...weeklyPlan.S2, ...priorityPlan];
+  assert.equal(new Set(planned).size, 20);
+  for (const kind of planned) assert.ok(Object.hasOwn(modules, kind), `${kind} has no module`);
+  for (const kind of Object.keys(modules)) assert.ok(planned.includes(kind), `${kind} is not planned`);
   assert.equal(challenges.length, 6 + Object.keys(modules).length, "legacy six stay available for practice");
 });

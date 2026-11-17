@@ -84,21 +84,35 @@ export const weeklyPlan = {
   S2: ["edit-distance", "lru-cache", "coin-change", "median-stream", "redundant-connection", "lis", "network-delay"],
 } as const;
 
+// Six LeetCode staples covering the patterns the plan lacks (Kadane, two pointers, intervals, rotated binary
+// search, grid BFS, knapsack). They jump the queue from PRIORITY_START; the weekly plan pauses and then resumes
+// exactly where it stopped, so no planned challenge is skipped.
+export const PRIORITY_START = "2026-11-18";
+export const priorityPlan = ["max-subarray", "container-water", "merge-intervals", "rotated-min", "rotting-oranges", "partition-subset"] as const;
+
 export type Slot =
   | { source: "legacy"; kind: LegacyKind }
   | { source: "plan"; week: "S1" | "S2"; kind: ModuleKind }
-  | { source: "fallback"; week: "S1" | "S2"; planned: string; kind: LegacyKind };
+  | { source: "priority"; kind: ModuleKind }
+  | { source: "fallback"; week: "S1" | "S2" | "priority"; planned: string; kind: LegacyKind };
 
 const legacyRotation = (dayNumber: number) => legacyChallenges[(dayNumber - ROLLOUT + 3) % 6].kind;
 
-// Already-issued days must keep their original challenge: the formulas before PLAN_START are frozen.
+// Already-issued days must keep their original challenge: the formulas before PLAN_START are frozen, and so is the
+// plan before PRIORITY_START.
 export function scheduleFor(day: string): Slot {
   const dayNumber = dayNumberOf(day);
   if (dayNumber < ROLLOUT) return { source: "legacy", kind: legacyChallenges[dayNumber % 3].kind };
   const offset = dayNumber - dayNumberOf(PLAN_START);
   if (offset < 0) return { source: "legacy", kind: legacyRotation(dayNumber) };
-  const week = Math.floor(offset / 7) % 2 === 0 ? "S1" : "S2";
-  const planned = weeklyPlan[week][offset % 7];
+  const sincePriority = dayNumber - dayNumberOf(PRIORITY_START);
+  if (sincePriority >= 0 && sincePriority < priorityPlan.length) {
+    const planned = priorityPlan[sincePriority];
+    return isModuleKind(planned) ? { source: "priority", kind: planned } : { source: "fallback", week: "priority", planned, kind: legacyRotation(dayNumber) };
+  }
+  const planOffset = sincePriority < 0 ? offset : offset - priorityPlan.length;
+  const week = Math.floor(planOffset / 7) % 2 === 0 ? "S1" : "S2";
+  const planned = weeklyPlan[week][planOffset % 7];
   return isModuleKind(planned) ? { source: "plan", week, kind: planned } : { source: "fallback", week, planned, kind: legacyRotation(dayNumber) };
 }
 
