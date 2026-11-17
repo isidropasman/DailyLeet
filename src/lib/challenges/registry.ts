@@ -13,6 +13,7 @@ import { lruCache } from "./lru-cache";
 import { redundantConnection } from "./redundant-connection";
 import { networkDelay } from "./network-delay";
 import { medianStream } from "./median-stream";
+import { maxSubarray } from "./max-subarray";
 
 // Client-safe registry. Adding a challenge: one line here and one in ./judges.ts (TypeScript enforces the second).
 export const modules = {
@@ -30,6 +31,7 @@ export const modules = {
   "redundant-connection": redundantConnection,
   "network-delay": networkDelay,
   "median-stream": medianStream,
+  "max-subarray": maxSubarray,
 } satisfies Record<string, ChallengeModule>;
 
 export type ModuleKind = keyof typeof modules;

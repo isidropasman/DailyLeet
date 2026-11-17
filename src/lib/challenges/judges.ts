@@ -14,6 +14,7 @@ import { lruCacheJudge } from "./lru-cache/cases";
 import { redundantConnectionJudge } from "./redundant-connection/cases";
 import { networkDelayJudge } from "./network-delay/cases";
 import { medianStreamJudge } from "./median-stream/cases";
+import { maxSubarrayJudge } from "./max-subarray/cases";
 
 // Server-only: hidden cases and pass/fail contracts. Import it only from engine.ts so cases stay out of the client bundle.
 export const judges: Record<ModuleKind, Judge> = {
@@ -31,4 +32,5 @@ export const judges: Record<ModuleKind, Judge> = {
   "redundant-connection": redundantConnectionJudge,
   "network-delay": networkDelayJudge,
   "median-stream": medianStreamJudge,
+  "max-subarray": maxSubarrayJudge,
 };
